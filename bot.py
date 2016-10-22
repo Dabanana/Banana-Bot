@@ -1,12 +1,10 @@
 import discord
 import random
-from imgurpython import ImgurClient
-import twitter
 import Tictactoe
+from cleverbot import Cleverbot
 
-api = twitter.Api("7L5XmV18ORSnp9yGo1SLuexnL", "ZktX8HqTTFgn25iWvGxizsKovFUWFGVKmacMJ0CrEgTZ6Flmrq", "2799268561-5pXZJUPwTaXm0kFzupPl7jsBDHDbnEpFvy05dE2", "xo9G4HHUswae7z8IdmZ1nzuzvaE1yhUXvkWQb8M7ks2ed")
+cleverbot_client = Cleverbot()
 client = discord.Client()
-imgurclient = ImgurClient("d0c24d1db4fb537","6d9578660c1ca1dd62c89c5ecc0f8fca289c7467")
 
 
 @client.async_event
@@ -15,40 +13,40 @@ def on_message(message):
 		return
 
 	if message.content.startswith('#test'):
-		yield from client.send_message(message.channel, "This is a fucking test", tts = True)
+		yield from client.send_message(message.channel, "This is a fucking test")
 
 	if message.content.startswith('#frank'):
-		yield from client.send_message(message.channel, "Hey I'm Frank. Would you like to know my opinion?", tts = True)
+		yield from client.send_message(message.channel, "Hey I'm Frank. Would you like to know my opinion?")
 		opinions = ["Hey, I agree with your opinion.", "I'm fucking triggered!", "Hey, your opinion's stupid"]
 		msg = yield from client.wait_for_message(timeout = 10, author = message.author)
 		if msg is None:
-			yield from client.send_message(message.channel, "Wow... I really wanted to share my opinion", tts = True)
+			yield from client.send_message(message.channel, "Wow... I really wanted to share my opinion")
 			return
 		if msg.content == "yes":
 			num = random.randint(0,2)
-			yield from client.send_message(message.channel, opinions[num], tts = True)
+			yield from client.send_message(message.channel, opinions[num])
 		elif msg.content == "no":
-			yield from client.send_message(message.channel, "Um. Wu", tts = True)
+			yield from client.send_message(message.channel, "Um. Wu")
 		elif msg.content == "wu":
 			while True:
-				yield from client.send_message(message.channel, "Yo. Wu", tts = True)
+				yield from client.send_message(message.channel, "Yo. Wu")
 				msg = yield from client.wait_for_message(timeout = 10, author = message.author,content = "wu") 
 				if msg is None:
-					yield from client.send_message(message.channel, "Wu!", tts = True)
+					yield from client.send_message(message.channel, "Wu!")
 					return
 
 	if message.content.startswith('#choose '):
 		msg = message.content[len('#choose'):].strip()
 		if msg == "":
-			yield from client.send_message(message.channel, "Give me some choices man!", tts = True)
+			yield from client.send_message(message.channel, "Give me some choices man!")
 			return
 		choices = msg.split(",")
 		xs = len(choices)
 		if xs == 1:
-			yield from client.send_message(message.channel, "You only gave me one choice, cunt.", tts = True)
+			yield from client.send_message(message.channel, "You only gave me one choice, cunt.")
 			return
 		num = random.randint(0,xs)
-		yield from client.send_message(message.channel, "I choose {0}".format(choices[num]), tts = True)
+		yield from client.send_message(message.channel, "I choose {0}".format(choices[num]))
 
 	if message.content.startswith('#kierannudes'):
 		yield from client.send_file(message.channel, "C://bananabot//kieran.jpg", filename = "kieran.jpg", content = "I don't have nudes but I have...")
@@ -57,17 +55,14 @@ def on_message(message):
 		yield from client.send_message(message.channel, "Shutting down...")
 		yield from client.logout()
 
-	if message.content.startswith('#imgur '):
-		items = imgurclient.gallery()
-		for item in items:
-			yield from client.send_message(message.channel, item.link)
-			return
-
 	if message.content.startswith('#tictactoe'):
 		t = Tictactoe.Tictactoe()
 		yield from client.send_message(message.channel, t)
 		while True:
 			message = yield from client.wait_for_message()
+			if message.content.startswith('#killttc'):
+				yield from client.send_message(message.channel, "Tictactoe game is dead.")
+				return
 			if message.content.startswith('#naught'):
 				coord = message.content.strip("#naught ")
 				row = int(coord[2])
@@ -82,6 +77,17 @@ def on_message(message):
 				yield from client.send_message(message.channel, t.check())
 			if t.win != 0:
 				return
+
+	if message.content.startswith('#bb'):
+		question = message.content.strip('#bb ')
+		answer = cleverbot_client.ask(question)
+		yield from client.send_message(message.channel, answer)
+
+	if "harambe" in message.content.lower():
+		yield from client.send_message(message.channel, "RIP")
+
+	if "banana" in message.content.lower():
+		yield from client.send_message(message.channel, ":Banana:")
 
 	if message.content.startswith("#psr"):
 		msg = message.content.strip("psr# ")

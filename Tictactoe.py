@@ -13,16 +13,18 @@ class Tictactoe:
 				if value == 0:
 					gameboard.append(":white_medium_square:")
 				elif value == -1:
-					gameboard.append(":x:")
+					gameboard.append(":heavy_multiplication_x:")
 				elif value == 1:
 					gameboard.append(":o:")
 		return "{0[0]} | {0[1]} | {0[2]}\n-----------------\n{0[3]} | {0[4]} | {0[5]}\n-----------------\n{0[6]} | {0[7]} | {0[8]}".format(gameboard)
 
 	def column(self):
 		checkcolumn = [0,0,0]
+		boardfull = 0
 		for row in self.board:
 			for (i, value) in enumerate(row):
 				checkcolumn[i] += value
+				boardfull += abs(value)
 		for total in checkcolumn:
 			if total == 3:
 				self.reset_board()
@@ -30,6 +32,8 @@ class Tictactoe:
 			elif total == -3:
 				self.reset_board()
 				self.win -= 1
+		if boardfull == 9:
+			self.win = 2
 
 	def row(self):
 		checkrow = [0,0,0]
@@ -68,6 +72,8 @@ class Tictactoe:
 			return "Naughts' win"
 		if self.win == -1:
 			return "Crosses' win"
+		if self.win == 2:
+			return "It's a Draw!"
 		else:
 			if self.turn == -1:
 				return "Crosses' Turn"
